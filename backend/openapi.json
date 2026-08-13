@@ -1,0 +1,5457 @@
+{
+ "openapi": "3.1.0",
+ "info": {
+  "title": "Whitfield WMS API",
+  "version": "1.0.0"
+ },
+ "paths": {
+  "/v1/auth/login": {
+   "post": {
+    "tags": [
+     "Auth"
+    ],
+    "summary": "Login",
+    "description": "Authenticate a warehouse staff user and return a JWT.\n\nArgs:\n    request (LoginRequest): Email and password.\n\nReturns:\n    LoginResponse: Access token and user details.\n\nRaises:\n    HTTPException 401: Invalid credentials.\n    HTTPException 403: User not active.\n    HTTPException 500: Internal server error.",
+    "operationId": "login_v1_auth_login_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/LoginRequest"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/LoginResponse"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/auth/seller/login": {
+   "post": {
+    "tags": [
+     "Auth"
+    ],
+    "summary": "Seller Login",
+    "description": "Authenticate a seller and return a seller-scoped JWT.\n\nArgs:\n    request (LoginRequest): Seller portal email and password.\n\nReturns:\n    LoginResponse: Access token and seller details.\n\nRaises:\n    HTTPException 401: Invalid credentials.\n    HTTPException 403: Seller not active.\n    HTTPException 500: Internal server error.",
+    "operationId": "seller_login_v1_auth_seller_login_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/LoginRequest"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/LoginResponse"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/users": {
+   "post": {
+    "tags": [
+     "Users"
+    ],
+    "summary": "Create User",
+    "description": "Create a warehouse staff user (admin only).\n\nArgs:\n    request (UserCreate): User creation payload.\n    auth (dict): Authenticated user claims.\n\nReturns:\n    UserResponse: Created user.\n\nRaises:\n    HTTPException 400/403/500.",
+    "operationId": "create_user_v1_users_post",
+    "security": [
+     {
+      "OAuth2PasswordBearer": []
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/UserCreate"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/UserResponse"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "get": {
+    "tags": [
+     "Users"
+    ],
+    "summary": "List Users",
+    "description": "List users.\n\nArgs:\n    role (Optional[str]): Role filter.\n    auth (dict): Authenticated user claims.\n\nReturns:\n    list[UserResponse]: List of users.",
+    "operationId": "list_users_v1_users_get",
+    "security": [
+     {
+      "OAuth2PasswordBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "role",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Role"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/UserResponse"
+         },
+         "title": "Response List Users V1 Users Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/users/{user_id}": {
+   "patch": {
+    "tags": [
+     "Users"
+    ],
+    "summary": "Update User",
+    "description": "Update a user.\n\nArgs:\n    user_id (str): Target user id.\n    request (UserUpdate): Update payload.\n    auth (dict): Authenticated user claims.\n\nReturns:\n    UserResponse: Updated user.",
+    "operationId": "update_user_v1_users__user_id__patch",
+    "security": [
+     {
+      "OAuth2PasswordBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "user_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "User Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/UserUpdate"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/UserResponse"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "delete": {
+    "tags": [
+     "Users"
+    ],
+    "summary": "Delete User",
+    "description": "Delete a user (admin only).\n\nArgs:\n    user_id (str): Target user id.\n    auth (dict): Authenticated user claims.\n\nReturns:\n    dict: Confirmation message.",
+    "operationId": "delete_user_v1_users__user_id__delete",
+    "security": [
+     {
+      "OAuth2PasswordBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "user_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "User Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/users/me/password": {
+   "post": {
+    "tags": [
+     "Users"
+    ],
+    "summary": "Change Password",
+    "description": "Change the authenticated user's password.\n\nArgs:\n    request (PasswordChange): Old and new password.\n    auth (dict): Authenticated user claims.\n\nReturns:\n    dict: Confirmation message.",
+    "operationId": "change_password_v1_users_me_password_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/PasswordChange"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    },
+    "security": [
+     {
+      "OAuth2PasswordBearer": []
+     }
+    ]
+   }
+  },
+  "/v1/warehouses": {
+   "get": {
+    "tags": [
+     "Warehouses"
+    ],
+    "summary": "List Warehouses",
+    "description": "List warehouses.\n\nArgs:\n    auth (dict): Authenticated user claims.\n\nReturns:\n    list[WarehouseResponse]: Warehouses.",
+    "operationId": "list_warehouses_v1_warehouses_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "items": {
+          "$ref": "#/components/schemas/WarehouseResponse"
+         },
+         "type": "array",
+         "title": "Response List Warehouses V1 Warehouses Get"
+        }
+       }
+      }
+     }
+    },
+    "security": [
+     {
+      "OAuth2PasswordBearer": []
+     }
+    ]
+   },
+   "post": {
+    "tags": [
+     "Warehouses"
+    ],
+    "summary": "Create Warehouse",
+    "description": "Create a warehouse (admin only).\n\nArgs:\n    request (WarehouseCreate): Warehouse payload.\n    auth (dict): Authenticated user claims.\n\nReturns:\n    WarehouseResponse: Created warehouse.",
+    "operationId": "create_warehouse_v1_warehouses_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/WarehouseCreate"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/WarehouseResponse"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    },
+    "security": [
+     {
+      "OAuth2PasswordBearer": []
+     }
+    ]
+   }
+  },
+  "/v1/warehouses/{warehouse_id}": {
+   "get": {
+    "tags": [
+     "Warehouses"
+    ],
+    "summary": "Get Warehouse",
+    "description": "Fetch a warehouse by id.\n\nArgs:\n    warehouse_id (str): Warehouse id.\n    auth (dict): Authenticated user claims.\n\nReturns:\n    WarehouseResponse: Warehouse.",
+    "operationId": "get_warehouse_v1_warehouses__warehouse_id__get",
+    "security": [
+     {
+      "OAuth2PasswordBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "warehouse_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Warehouse Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/WarehouseResponse"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "patch": {
+    "tags": [
+     "Warehouses"
+    ],
+    "summary": "Update Warehouse",
+    "description": "Update a warehouse (admin only).\n\nArgs:\n    warehouse_id (str): Warehouse id.\n    request (WarehouseUpdate): Update payload.\n    auth (dict): Authenticated user claims.\n\nReturns:\n    WarehouseResponse: Updated warehouse.",
+    "operationId": "update_warehouse_v1_warehouses__warehouse_id__patch",
+    "security": [
+     {
+      "OAuth2PasswordBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "warehouse_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Warehouse Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/WarehouseUpdate"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/WarehouseResponse"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/sellers": {
+   "post": {
+    "tags": [
+     "Sellers"
+    ],
+    "summary": "Create Seller",
+    "description": "Create a seller (admin only).\n\nArgs:\n    request (SellerCreate): Seller payload.\n    auth (dict): Authenticated user claims.\n\nReturns:\n    SellerResponse: Created seller.",
+    "operationId": "create_seller_v1_sellers_post",
+    "security": [
+     {
+      "OAuth2PasswordBearer": []
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/SellerCreate"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/SellerResponse"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "get": {
+    "tags": [
+     "Sellers"
+    ],
+    "summary": "List Sellers",
+    "description": "List sellers.\n\nArgs:\n    is_active (Optional[bool]): Active filter.\n    auth (dict): Authenticated user claims.\n\nReturns:\n    list[SellerResponse]: Sellers.",
+    "operationId": "list_sellers_v1_sellers_get",
+    "security": [
+     {
+      "OAuth2PasswordBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "is_active",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "boolean"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Is Active"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/SellerResponse"
+         },
+         "title": "Response List Sellers V1 Sellers Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/sellers/{seller_id}": {
+   "get": {
+    "tags": [
+     "Sellers"
+    ],
+    "summary": "Get Seller",
+    "description": "Fetch a seller by id.\n\nArgs:\n    seller_id (str): Seller id.\n    auth (dict): Authenticated user claims.\n\nReturns:\n    SellerResponse: Seller.",
+    "operationId": "get_seller_v1_sellers__seller_id__get",
+    "security": [
+     {
+      "OAuth2PasswordBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "seller_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Seller Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/SellerResponse"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "patch": {
+    "tags": [
+     "Sellers"
+    ],
+    "summary": "Update Seller",
+    "description": "Update a seller (admin only).\n\nArgs:\n    seller_id (str): Seller id.\n    request (SellerUpdate): Update payload.\n    auth (dict): Authenticated user claims.\n\nReturns:\n    SellerResponse: Updated seller.",
+    "operationId": "update_seller_v1_sellers__seller_id__patch",
+    "security": [
+     {
+      "OAuth2PasswordBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "seller_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Seller Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/SellerUpdate"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/SellerResponse"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/products": {
+   "post": {
+    "tags": [
+     "Products"
+    ],
+    "summary": "Create Product",
+    "description": "Create a product.\n\nArgs:\n    request (ProductCreate): Product payload.\n    auth (dict): Authenticated user claims.\n\nReturns:\n    ProductResponse: Created product.",
+    "operationId": "create_product_v1_products_post",
+    "security": [
+     {
+      "OAuth2PasswordBearer": []
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ProductCreate"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ProductResponse"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "get": {
+    "tags": [
+     "Products"
+    ],
+    "summary": "List Products",
+    "description": "List products.\n\nArgs:\n    seller_id (Optional[str]): Seller filter.\n    auth (dict): Authenticated user claims.\n\nReturns:\n    list[ProductResponse]: Products.",
+    "operationId": "list_products_v1_products_get",
+    "security": [
+     {
+      "OAuth2PasswordBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "seller_id",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Seller Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/ProductResponse"
+         },
+         "title": "Response List Products V1 Products Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/products/upc/{upc}": {
+   "get": {
+    "tags": [
+     "Products"
+    ],
+    "summary": "Get Product By Upc",
+    "description": "Fetch a product by UPC barcode.\n\nArgs:\n    upc (str): UPC barcode.\n    auth (dict): Authenticated user claims.\n\nReturns:\n    ProductResponse: Product.",
+    "operationId": "get_product_by_upc_v1_products_upc__upc__get",
+    "security": [
+     {
+      "OAuth2PasswordBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "upc",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Upc"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ProductResponse"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/products/{product_id}": {
+   "get": {
+    "tags": [
+     "Products"
+    ],
+    "summary": "Get Product",
+    "description": "Fetch a product by id.\n\nArgs:\n    product_id (str): Product id.\n    auth (dict): Authenticated user claims.\n\nReturns:\n    ProductResponse: Product.",
+    "operationId": "get_product_v1_products__product_id__get",
+    "security": [
+     {
+      "OAuth2PasswordBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "product_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Product Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ProductResponse"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "patch": {
+    "tags": [
+     "Products"
+    ],
+    "summary": "Update Product",
+    "description": "Update a product.\n\nArgs:\n    product_id (str): Product id.\n    request (ProductUpdate): Update payload.\n    auth (dict): Authenticated user claims.\n\nReturns:\n    ProductResponse: Updated product.",
+    "operationId": "update_product_v1_products__product_id__patch",
+    "security": [
+     {
+      "OAuth2PasswordBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "product_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Product Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ProductUpdate"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ProductResponse"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/inventory": {
+   "get": {
+    "tags": [
+     "Inventory"
+    ],
+    "summary": "List Inventory",
+    "description": "List inventory records.\n\nArgs:\n    warehouse_id (Optional[str]): Warehouse filter.\n    auth (dict): Authenticated user claims.\n\nReturns:\n    list[InventoryResponse]: Inventory records.",
+    "operationId": "list_inventory_v1_inventory_get",
+    "security": [
+     {
+      "OAuth2PasswordBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "warehouse_id",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Warehouse Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/InventoryResponse"
+         },
+         "title": "Response List Inventory V1 Inventory Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/inventory/stock/{upc}": {
+   "get": {
+    "tags": [
+     "Inventory"
+    ],
+    "summary": "Stock By Upc",
+    "description": "Return live stock for a product UPC at a warehouse.\n\nArgs:\n    upc (str): UPC barcode.\n    warehouse_id (str): Warehouse id.\n    auth (dict): Authenticated user claims.\n\nReturns:\n    StockLevelResponse: Live stock levels.",
+    "operationId": "stock_by_upc_v1_inventory_stock__upc__get",
+    "security": [
+     {
+      "OAuth2PasswordBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "upc",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Upc"
+      }
+     },
+     {
+      "name": "warehouse_id",
+      "in": "query",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Warehouse Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/StockLevelResponse"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/inventory/low-stock": {
+   "get": {
+    "tags": [
+     "Inventory"
+    ],
+    "summary": "Low Stock",
+    "description": "List low-stock products.\n\nArgs:\n    warehouse_id (Optional[str]): Warehouse filter.\n    auth (dict): Authenticated user claims.\n\nReturns:\n    list[StockLevelResponse]: Low-stock products.",
+    "operationId": "low_stock_v1_inventory_low_stock_get",
+    "security": [
+     {
+      "OAuth2PasswordBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "warehouse_id",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Warehouse Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/StockLevelResponse"
+         },
+         "title": "Response Low Stock V1 Inventory Low Stock Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/inventory/{inventory_id}": {
+   "patch": {
+    "tags": [
+     "Inventory"
+    ],
+    "summary": "Adjust Inventory",
+    "description": "Adjust inventory counts (admin/manager).\n\nArgs:\n    inventory_id (str): Inventory id.\n    request (InventoryAdjustRequest): Adjustment payload.\n    auth (dict): Authenticated user claims.\n\nReturns:\n    InventoryResponse: Updated inventory.",
+    "operationId": "adjust_inventory_v1_inventory__inventory_id__patch",
+    "security": [
+     {
+      "OAuth2PasswordBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "inventory_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Inventory Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/InventoryAdjustRequest"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/InventoryResponse"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/shipments/draft": {
+   "post": {
+    "tags": [
+     "Shipments"
+    ],
+    "summary": "Create Shipment Draft",
+    "description": "Create a draft shipment after duplicate verification.\n\nArgs:\n    request (ShipmentDraftCreate): Draft shipment payload.\n    auth (dict): Authenticated user claims.\n\nReturns:\n    ShipmentResponse: Draft shipment.\n\nRaises:\n    HTTPException 400: Duplicate shipment reference.",
+    "operationId": "create_shipment_draft_v1_shipments_draft_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ShipmentDraftCreate"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ShipmentResponse"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    },
+    "security": [
+     {
+      "OAuth2PasswordBearer": []
+     }
+    ]
+   }
+  },
+  "/v1/shipments/confirm": {
+   "post": {
+    "tags": [
+     "Shipments"
+    ],
+    "summary": "Confirm Shipment",
+    "description": "Confirm receipt of a shipment (transactional).\n\nArgs:\n    request (ShipmentConfirm): Confirmation payload.\n    auth (dict): Authenticated user claims.\n\nReturns:\n    ShipmentResponse: Confirmed shipment.",
+    "operationId": "confirm_shipment_v1_shipments_confirm_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ShipmentConfirm"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ShipmentResponse"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    },
+    "security": [
+     {
+      "OAuth2PasswordBearer": []
+     }
+    ]
+   }
+  },
+  "/v1/shipments": {
+   "get": {
+    "tags": [
+     "Shipments"
+    ],
+    "summary": "List Shipments",
+    "description": "List shipments.\n\nArgs:\n    warehouse_id (Optional[str]): Warehouse filter.\n    auth (dict): Authenticated user claims.\n\nReturns:\n    list[ShipmentResponse]: Shipments.",
+    "operationId": "list_shipments_v1_shipments_get",
+    "security": [
+     {
+      "OAuth2PasswordBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "warehouse_id",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Warehouse Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/ShipmentResponse"
+         },
+         "title": "Response List Shipments V1 Shipments Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/shipments/{shipment_id}": {
+   "get": {
+    "tags": [
+     "Shipments"
+    ],
+    "summary": "Get Shipment",
+    "description": "Fetch a shipment by id.\n\nArgs:\n    shipment_id (str): Shipment id.\n    auth (dict): Authenticated user claims.\n\nReturns:\n    ShipmentResponse: Shipment.",
+    "operationId": "get_shipment_v1_shipments__shipment_id__get",
+    "security": [
+     {
+      "OAuth2PasswordBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "shipment_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Shipment Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ShipmentResponse"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/orders": {
+   "post": {
+    "tags": [
+     "Orders"
+    ],
+    "summary": "Create Order",
+    "description": "Create an order and reserve stock for its items.\n\nArgs:\n    request (OrderCreate): Order payload.\n    auth (dict): Authenticated user claims.\n\nReturns:\n    OrderResponse: Created order.\n\nRaises:\n    HTTPException 409: Insufficient stock.",
+    "operationId": "create_order_v1_orders_post",
+    "security": [
+     {
+      "OAuth2PasswordBearer": []
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/OrderCreate"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/OrderResponse"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "get": {
+    "tags": [
+     "Orders"
+    ],
+    "summary": "List Orders",
+    "description": "List orders.\n\nArgs:\n    warehouse_id (Optional[str]): Warehouse filter.\n    assigned (bool): Only the caller's assigned orders.\n    auth (dict): Authenticated user claims.\n\nReturns:\n    list[OrderResponse]: Orders.",
+    "operationId": "list_orders_v1_orders_get",
+    "security": [
+     {
+      "OAuth2PasswordBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "warehouse_id",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Warehouse Id"
+      }
+     },
+     {
+      "name": "assigned",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "boolean",
+       "default": false,
+       "title": "Assigned"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/OrderResponse"
+         },
+         "title": "Response List Orders V1 Orders Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/orders/{order_id}": {
+   "get": {
+    "tags": [
+     "Orders"
+    ],
+    "summary": "Get Order",
+    "description": "Fetch an order by id.\n\nArgs:\n    order_id (str): Order id.\n    auth (dict): Authenticated user claims.\n\nReturns:\n    OrderResponse: Order.",
+    "operationId": "get_order_v1_orders__order_id__get",
+    "security": [
+     {
+      "OAuth2PasswordBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "order_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Order Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/OrderResponse"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/orders/{order_id}/status": {
+   "patch": {
+    "tags": [
+     "Orders"
+    ],
+    "summary": "Update Order Status",
+    "description": "Update an order's status through its workflow.\n\nArgs:\n    order_id (str): Order id.\n    request (OrderStatusUpdate): Status update payload.\n    auth (dict): Authenticated user claims.\n\nReturns:\n    OrderResponse: Updated order.",
+    "operationId": "update_order_status_v1_orders__order_id__status_patch",
+    "security": [
+     {
+      "OAuth2PasswordBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "order_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Order Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/OrderStatusUpdate"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/OrderResponse"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/audit-logs": {
+   "get": {
+    "tags": [
+     "Audit Logs"
+    ],
+    "summary": "List Audit Logs",
+    "description": "List audit log entries (admin only).\n\nArgs:\n    record_id (Optional[str]): Record id filter.\n    limit (int): Max entries.\n    auth (dict): Authenticated user claims.\n\nReturns:\n    list[AuditLogResponse]: Audit entries.",
+    "operationId": "list_audit_logs_v1_audit_logs_get",
+    "security": [
+     {
+      "OAuth2PasswordBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "record_id",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Record Id"
+      }
+     },
+     {
+      "name": "limit",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "maximum": 500,
+       "minimum": 1,
+       "default": 50,
+       "title": "Limit"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/AuditLogResponse"
+         },
+         "title": "Response List Audit Logs V1 Audit Logs Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/audit-logs/history": {
+   "get": {
+    "tags": [
+     "Audit Logs"
+    ],
+    "summary": "Audit History",
+    "description": "Return audit history for a specific record (admin only).\n\nArgs:\n    record_id (str): Record id.\n    collection_name (str): Collection name.\n    auth (dict): Authenticated user claims.\n\nReturns:\n    list[AuditLogResponse]: Audit history.",
+    "operationId": "audit_history_v1_audit_logs_history_get",
+    "security": [
+     {
+      "OAuth2PasswordBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "record_id",
+      "in": "query",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Record Id"
+      }
+     },
+     {
+      "name": "collection_name",
+      "in": "query",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Collection Name"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/AuditLogResponse"
+         },
+         "title": "Response Audit History V1 Audit Logs History Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/damage-records": {
+   "post": {
+    "tags": [
+     "Damage Records"
+    ],
+    "summary": "Create Damage Record",
+    "description": "Create a damage assessment record.\n\nArgs:\n    request (DamageRecordCreate): Damage record payload.\n    auth (dict): Authenticated user claims.\n\nReturns:\n    DamageRecordResponse: Created damage record.",
+    "operationId": "create_damage_record_v1_damage_records_post",
+    "security": [
+     {
+      "OAuth2PasswordBearer": []
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/DamageRecordCreate"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/DamageRecordResponse"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "get": {
+    "tags": [
+     "Damage Records"
+    ],
+    "summary": "List Damage Records",
+    "description": "List damage records.\n\nArgs:\n    warehouse_id (Optional[str]): Warehouse filter.\n    auth (dict): Authenticated user claims.\n\nReturns:\n    list[DamageRecordResponse]: Damage records.",
+    "operationId": "list_damage_records_v1_damage_records_get",
+    "security": [
+     {
+      "OAuth2PasswordBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "warehouse_id",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Warehouse Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/DamageRecordResponse"
+         },
+         "title": "Response List Damage Records V1 Damage Records Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/damage-records/{damage_id}": {
+   "get": {
+    "tags": [
+     "Damage Records"
+    ],
+    "summary": "Get Damage Record",
+    "description": "Fetch a damage record by id.\n\nArgs:\n    damage_id (str): Damage record id.\n    auth (dict): Authenticated user claims.\n\nReturns:\n    DamageRecordResponse: Damage record.",
+    "operationId": "get_damage_record_v1_damage_records__damage_id__get",
+    "security": [
+     {
+      "OAuth2PasswordBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "damage_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Damage Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/DamageRecordResponse"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/bin-locations": {
+   "post": {
+    "tags": [
+     "Bin Locations"
+    ],
+    "summary": "Create Bin Location",
+    "description": "Create a bin location.\n\nArgs:\n    request (BinLocationCreate): Bin location payload.\n    auth (dict): Authenticated user claims.\n\nReturns:\n    BinLocationResponse: Created bin location.",
+    "operationId": "create_bin_location_v1_bin_locations_post",
+    "security": [
+     {
+      "OAuth2PasswordBearer": []
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/BinLocationCreate"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/BinLocationResponse"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "get": {
+    "tags": [
+     "Bin Locations"
+    ],
+    "summary": "List Bin Locations",
+    "description": "List bin locations.\n\nArgs:\n    warehouse_id (Optional[str]): Warehouse filter.\n    empty (bool): Only empty bins.\n    auth (dict): Authenticated user claims.\n\nReturns:\n    list[BinLocationResponse]: Bin locations.",
+    "operationId": "list_bin_locations_v1_bin_locations_get",
+    "security": [
+     {
+      "OAuth2PasswordBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "warehouse_id",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Warehouse Id"
+      }
+     },
+     {
+      "name": "empty",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "boolean",
+       "default": false,
+       "title": "Empty"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/BinLocationResponse"
+         },
+         "title": "Response List Bin Locations V1 Bin Locations Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/bin-locations/product/{product_id}": {
+   "get": {
+    "tags": [
+     "Bin Locations"
+    ],
+    "summary": "Find Bin For Product",
+    "description": "Find the bin where a product is stored.\n\nArgs:\n    product_id (str): Product id.\n    warehouse_id (str): Warehouse id.\n    auth (dict): Authenticated user claims.\n\nReturns:\n    BinLocationResponse: Bin location.",
+    "operationId": "find_bin_for_product_v1_bin_locations_product__product_id__get",
+    "security": [
+     {
+      "OAuth2PasswordBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "product_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Product Id"
+      }
+     },
+     {
+      "name": "warehouse_id",
+      "in": "query",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Warehouse Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/BinLocationResponse"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/bin-locations/{bin_id}": {
+   "patch": {
+    "tags": [
+     "Bin Locations"
+    ],
+    "summary": "Update Bin Location",
+    "description": "Update a bin location.\n\nArgs:\n    bin_id (str): Bin location id.\n    request (BinLocationUpdate): Update payload.\n    auth (dict): Authenticated user claims.\n\nReturns:\n    BinLocationResponse: Updated bin location.",
+    "operationId": "update_bin_location_v1_bin_locations__bin_id__patch",
+    "security": [
+     {
+      "OAuth2PasswordBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "bin_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Bin Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/BinLocationUpdate"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/BinLocationResponse"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/returns": {
+   "post": {
+    "tags": [
+     "Returns"
+    ],
+    "summary": "Process Return",
+    "description": "Process a customer return and apply disposition.\n\nArgs:\n    request (ReturnCreate): Return processing payload.\n    auth (dict): Authenticated user claims.\n\nReturns:\n    ReturnResponse: Created return.",
+    "operationId": "process_return_v1_returns_post",
+    "security": [
+     {
+      "OAuth2PasswordBearer": []
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ReturnCreate"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ReturnResponse"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "get": {
+    "tags": [
+     "Returns"
+    ],
+    "summary": "List Returns",
+    "description": "List returns.\n\nArgs:\n    warehouse_id (Optional[str]): Warehouse filter.\n    auth (dict): Authenticated user claims.\n\nReturns:\n    list[ReturnResponse]: Returns.",
+    "operationId": "list_returns_v1_returns_get",
+    "security": [
+     {
+      "OAuth2PasswordBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "warehouse_id",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Warehouse Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/ReturnResponse"
+         },
+         "title": "Response List Returns V1 Returns Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/returns/{return_id}": {
+   "get": {
+    "tags": [
+     "Returns"
+    ],
+    "summary": "Get Return",
+    "description": "Fetch a return by id.\n\nArgs:\n    return_id (str): Return id.\n    auth (dict): Authenticated user claims.\n\nReturns:\n    ReturnResponse: Return.",
+    "operationId": "get_return_v1_returns__return_id__get",
+    "security": [
+     {
+      "OAuth2PasswordBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "return_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Return Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ReturnResponse"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/invoices": {
+   "get": {
+    "tags": [
+     "Invoices"
+    ],
+    "summary": "List Invoices",
+    "description": "List invoices (admin only).\n\nArgs:\n    seller_id (Optional[str]): Seller filter.\n    auth (dict): Authenticated user claims.\n\nReturns:\n    list[InvoiceResponse]: Invoices.",
+    "operationId": "list_invoices_v1_invoices_get",
+    "security": [
+     {
+      "OAuth2PasswordBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "seller_id",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Seller Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/InvoiceResponse"
+         },
+         "title": "Response List Invoices V1 Invoices Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/invoices/{invoice_id}": {
+   "get": {
+    "tags": [
+     "Invoices"
+    ],
+    "summary": "Get Invoice",
+    "description": "Fetch an invoice by id (admin only).\n\nArgs:\n    invoice_id (str): Invoice id.\n    auth (dict): Authenticated user claims.\n\nReturns:\n    InvoiceResponse: Invoice.",
+    "operationId": "get_invoice_v1_invoices__invoice_id__get",
+    "security": [
+     {
+      "OAuth2PasswordBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "invoice_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Invoice Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/InvoiceResponse"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/invoices/generate": {
+   "post": {
+    "tags": [
+     "Invoices"
+    ],
+    "summary": "Generate Invoices",
+    "description": "Generate invoices for a period (admin only).\n\nArgs:\n    year (int): Billing year.\n    month (int): Billing month.\n    auth (dict): Authenticated user claims.\n\nReturns:\n    list[InvoiceResponse]: Generated invoices.",
+    "operationId": "generate_invoices_v1_invoices_generate_post",
+    "security": [
+     {
+      "OAuth2PasswordBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "year",
+      "in": "query",
+      "required": true,
+      "schema": {
+       "type": "integer",
+       "title": "Year"
+      }
+     },
+     {
+      "name": "month",
+      "in": "query",
+      "required": true,
+      "schema": {
+       "type": "integer",
+       "maximum": 12,
+       "minimum": 1,
+       "title": "Month"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/InvoiceResponse"
+         },
+         "title": "Response Generate Invoices V1 Invoices Generate Post"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/notifications": {
+   "get": {
+    "tags": [
+     "Notifications"
+    ],
+    "summary": "List Notifications",
+    "description": "List notifications for the authenticated user.\n\nArgs:\n    unread_only (bool): Only unread notifications.\n    auth (dict): Authenticated user claims.\n\nReturns:\n    list[NotificationResponse]: Notifications.",
+    "operationId": "list_notifications_v1_notifications_get",
+    "security": [
+     {
+      "OAuth2PasswordBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "unread_only",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "boolean",
+       "default": false,
+       "title": "Unread Only"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/NotificationResponse"
+         },
+         "title": "Response List Notifications V1 Notifications Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/notifications/{notification_id}/read": {
+   "patch": {
+    "tags": [
+     "Notifications"
+    ],
+    "summary": "Mark Notification Read",
+    "description": "Mark a notification as read.\n\nArgs:\n    notification_id (str): Notification id.\n    auth (dict): Authenticated user claims.\n\nReturns:\n    NotificationResponse: Updated notification.",
+    "operationId": "mark_notification_read_v1_notifications__notification_id__read_patch",
+    "security": [
+     {
+      "OAuth2PasswordBearer": []
+     }
+    ],
+    "parameters": [
+     {
+      "name": "notification_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Notification Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/NotificationResponse"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/dashboard/overview": {
+   "get": {
+    "tags": [
+     "Dashboard"
+    ],
+    "summary": "Dashboard Overview",
+    "description": "Return aggregated management dashboard data (admin only).\n\nArgs:\n    auth (dict): Authenticated user claims.\n\nReturns:\n    DashboardResponse: Dashboard overview.",
+    "operationId": "dashboard_overview_v1_dashboard_overview_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/DashboardResponse"
+        }
+       }
+      }
+     }
+    },
+    "security": [
+     {
+      "OAuth2PasswordBearer": []
+     }
+    ]
+   }
+  }
+ },
+ "components": {
+  "schemas": {
+   "AuditLogResponse": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "title": "Id"
+     },
+     "user_id": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "User Id"
+     },
+     "user_name": {
+      "type": "string",
+      "title": "User Name"
+     },
+     "action": {
+      "type": "string",
+      "title": "Action"
+     },
+     "collection_name": {
+      "type": "string",
+      "title": "Collection Name"
+     },
+     "record_id": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Record Id"
+     },
+     "warehouse_id": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Warehouse Id"
+     },
+     "old_value": {
+      "type": "object",
+      "title": "Old Value"
+     },
+     "new_value": {
+      "type": "object",
+      "title": "New Value"
+     },
+     "method": {
+      "$ref": "#/components/schemas/AuditMethod"
+     },
+     "ip_address": {
+      "type": "string",
+      "title": "Ip Address"
+     },
+     "created_at": {
+      "type": "string",
+      "title": "Created At"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "user_name",
+     "action",
+     "collection_name",
+     "old_value",
+     "new_value",
+     "method",
+     "ip_address",
+     "created_at"
+    ],
+    "title": "AuditLogResponse",
+    "description": "Audit log entry representation."
+   },
+   "AuditMethod": {
+    "type": "string",
+    "enum": [
+     "manual_entry",
+     "barcode_scan",
+     "voice_input",
+     "ai_agent",
+     "api_script",
+     "system_auto"
+    ],
+    "title": "AuditMethod",
+    "description": "Source method of a recorded action."
+   },
+   "BillingRatesCreate": {
+    "properties": {
+     "storage_per_unit_per_day": {
+      "type": "number",
+      "title": "Storage Per Unit Per Day",
+      "default": 0.05
+     },
+     "fulfillment_per_order": {
+      "type": "number",
+      "title": "Fulfillment Per Order",
+      "default": 3.5
+     },
+     "receiving_per_unit": {
+      "type": "number",
+      "title": "Receiving Per Unit",
+      "default": 0.25
+     }
+    },
+    "type": "object",
+    "title": "BillingRatesCreate",
+    "description": "Per-unit billing rates."
+   },
+   "BillingRatesResponse": {
+    "properties": {
+     "storage_per_unit_per_day": {
+      "type": "number",
+      "title": "Storage Per Unit Per Day"
+     },
+     "fulfillment_per_order": {
+      "type": "number",
+      "title": "Fulfillment Per Order"
+     },
+     "receiving_per_unit": {
+      "type": "number",
+      "title": "Receiving Per Unit"
+     }
+    },
+    "type": "object",
+    "required": [
+     "storage_per_unit_per_day",
+     "fulfillment_per_order",
+     "receiving_per_unit"
+    ],
+    "title": "BillingRatesResponse",
+    "description": "Per-unit billing rates."
+   },
+   "BinLocationCreate": {
+    "properties": {
+     "warehouse_id": {
+      "type": "string",
+      "title": "Warehouse Id"
+     },
+     "bin_code": {
+      "type": "string",
+      "title": "Bin Code"
+     },
+     "aisle": {
+      "type": "string",
+      "title": "Aisle"
+     },
+     "row": {
+      "type": "string",
+      "title": "Row"
+     },
+     "shelf": {
+      "type": "string",
+      "title": "Shelf"
+     },
+     "bin": {
+      "type": "string",
+      "title": "Bin"
+     },
+     "product_id": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Product Id"
+     },
+     "max_capacity": {
+      "type": "integer",
+      "title": "Max Capacity",
+      "default": 100
+     },
+     "current_units": {
+      "type": "integer",
+      "title": "Current Units",
+      "default": 0
+     },
+     "is_occupied": {
+      "type": "boolean",
+      "title": "Is Occupied",
+      "default": false
+     }
+    },
+    "type": "object",
+    "required": [
+     "warehouse_id",
+     "bin_code",
+     "aisle",
+     "row",
+     "shelf",
+     "bin"
+    ],
+    "title": "BinLocationCreate",
+    "description": "Payload to create a bin location."
+   },
+   "BinLocationResponse": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "title": "Id"
+     },
+     "warehouse_id": {
+      "type": "string",
+      "title": "Warehouse Id"
+     },
+     "bin_code": {
+      "type": "string",
+      "title": "Bin Code"
+     },
+     "aisle": {
+      "type": "string",
+      "title": "Aisle"
+     },
+     "row": {
+      "type": "string",
+      "title": "Row"
+     },
+     "shelf": {
+      "type": "string",
+      "title": "Shelf"
+     },
+     "bin": {
+      "type": "string",
+      "title": "Bin"
+     },
+     "product_id": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Product Id"
+     },
+     "max_capacity": {
+      "type": "integer",
+      "title": "Max Capacity"
+     },
+     "current_units": {
+      "type": "integer",
+      "title": "Current Units"
+     },
+     "is_occupied": {
+      "type": "boolean",
+      "title": "Is Occupied"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "warehouse_id",
+     "bin_code",
+     "aisle",
+     "row",
+     "shelf",
+     "bin",
+     "max_capacity",
+     "current_units",
+     "is_occupied"
+    ],
+    "title": "BinLocationResponse",
+    "description": "Bin location representation."
+   },
+   "BinLocationUpdate": {
+    "properties": {
+     "product_id": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Product Id"
+     },
+     "max_capacity": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Max Capacity"
+     },
+     "current_units": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Current Units"
+     },
+     "is_occupied": {
+      "anyOf": [
+       {
+        "type": "boolean"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Is Occupied"
+     }
+    },
+    "type": "object",
+    "title": "BinLocationUpdate",
+    "description": "Payload to update a bin location."
+   },
+   "CarrierScheduleCreate": {
+    "properties": {
+     "carrier": {
+      "type": "string",
+      "title": "Carrier"
+     },
+     "pickup_time": {
+      "type": "string",
+      "title": "Pickup Time"
+     },
+     "days": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "title": "Days"
+     }
+    },
+    "type": "object",
+    "required": [
+     "carrier",
+     "pickup_time"
+    ],
+    "title": "CarrierScheduleCreate",
+    "description": "Carrier pickup schedule."
+   },
+   "CarrierScheduleResponse": {
+    "properties": {
+     "carrier": {
+      "type": "string",
+      "title": "Carrier"
+     },
+     "pickup_time": {
+      "type": "string",
+      "title": "Pickup Time"
+     },
+     "days": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "title": "Days"
+     }
+    },
+    "type": "object",
+    "required": [
+     "carrier",
+     "pickup_time",
+     "days"
+    ],
+    "title": "CarrierScheduleResponse",
+    "description": "Carrier pickup schedule."
+   },
+   "CustomerCreate": {
+    "properties": {
+     "name": {
+      "type": "string",
+      "title": "Name"
+     },
+     "address": {
+      "type": "string",
+      "title": "Address"
+     }
+    },
+    "type": "object",
+    "required": [
+     "name",
+     "address"
+    ],
+    "title": "CustomerCreate",
+    "description": "Order customer details."
+   },
+   "CustomerResponse": {
+    "properties": {
+     "name": {
+      "type": "string",
+      "title": "Name"
+     },
+     "address": {
+      "type": "string",
+      "title": "Address"
+     }
+    },
+    "type": "object",
+    "required": [
+     "name",
+     "address"
+    ],
+    "title": "CustomerResponse",
+    "description": "Order customer details."
+   },
+   "DamageGrade": {
+    "type": "string",
+    "enum": [
+     "A",
+     "B",
+     "C",
+     "D"
+    ],
+    "title": "DamageGrade",
+    "description": "Standardized four-level damage grading system."
+   },
+   "DamageRecordCreate": {
+    "properties": {
+     "shipment_id": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Shipment Id"
+     },
+     "shipment_ref": {
+      "type": "string",
+      "title": "Shipment Ref",
+      "default": ""
+     },
+     "product_id": {
+      "type": "string",
+      "title": "Product Id"
+     },
+     "warehouse_id": {
+      "type": "string",
+      "title": "Warehouse Id"
+     },
+     "quantity_damaged": {
+      "type": "integer",
+      "minimum": 1.0,
+      "title": "Quantity Damaged"
+     },
+     "damage_grade": {
+      "$ref": "#/components/schemas/DamageGrade"
+     },
+     "damage_notes": {
+      "type": "string",
+      "title": "Damage Notes",
+      "default": ""
+     },
+     "carrier": {
+      "type": "string",
+      "title": "Carrier",
+      "default": ""
+     },
+     "carrier_tracking": {
+      "type": "string",
+      "title": "Carrier Tracking",
+      "default": ""
+     },
+     "action_taken": {
+      "type": "string",
+      "title": "Action Taken",
+      "default": ""
+     }
+    },
+    "type": "object",
+    "required": [
+     "product_id",
+     "warehouse_id",
+     "quantity_damaged",
+     "damage_grade"
+    ],
+    "title": "DamageRecordCreate",
+    "description": "Payload to create a damage assessment."
+   },
+   "DamageRecordResponse": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "title": "Id"
+     },
+     "shipment_id": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Shipment Id"
+     },
+     "shipment_ref": {
+      "type": "string",
+      "title": "Shipment Ref"
+     },
+     "product_id": {
+      "type": "string",
+      "title": "Product Id"
+     },
+     "product_name": {
+      "type": "string",
+      "title": "Product Name"
+     },
+     "seller_id": {
+      "type": "string",
+      "title": "Seller Id"
+     },
+     "warehouse_id": {
+      "type": "string",
+      "title": "Warehouse Id"
+     },
+     "quantity_damaged": {
+      "type": "integer",
+      "title": "Quantity Damaged"
+     },
+     "damage_grade": {
+      "$ref": "#/components/schemas/DamageGrade"
+     },
+     "damage_notes": {
+      "type": "string",
+      "title": "Damage Notes"
+     },
+     "carrier": {
+      "type": "string",
+      "title": "Carrier"
+     },
+     "carrier_tracking": {
+      "type": "string",
+      "title": "Carrier Tracking"
+     },
+     "assessed_by": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Assessed By"
+     },
+     "action_taken": {
+      "type": "string",
+      "title": "Action Taken"
+     },
+     "seller_notified": {
+      "type": "boolean",
+      "title": "Seller Notified"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "shipment_ref",
+     "product_id",
+     "product_name",
+     "seller_id",
+     "warehouse_id",
+     "quantity_damaged",
+     "damage_grade",
+     "damage_notes",
+     "carrier",
+     "carrier_tracking",
+     "action_taken",
+     "seller_notified"
+    ],
+    "title": "DamageRecordResponse",
+    "description": "Damage assessment representation."
+   },
+   "DashboardResponse": {
+    "properties": {
+     "warehouses": {
+      "items": {
+       "$ref": "#/components/schemas/WarehouseOverview"
+      },
+      "type": "array",
+      "title": "Warehouses"
+     },
+     "inventory": {
+      "items": {
+       "$ref": "#/components/schemas/InventoryOverviewItem"
+      },
+      "type": "array",
+      "title": "Inventory"
+     },
+     "activity_feed": {
+      "items": {
+       "type": "object"
+      },
+      "type": "array",
+      "title": "Activity Feed"
+     },
+     "quick_stats": {
+      "items": {
+       "$ref": "#/components/schemas/QuickStat"
+      },
+      "type": "array",
+      "title": "Quick Stats"
+     }
+    },
+    "type": "object",
+    "required": [
+     "warehouses",
+     "inventory",
+     "activity_feed",
+     "quick_stats"
+    ],
+    "title": "DashboardResponse",
+    "description": "Aggregated dashboard data."
+   },
+   "DimensionsCreate": {
+    "properties": {
+     "weight_lbs": {
+      "type": "number",
+      "title": "Weight Lbs",
+      "default": 0.0
+     },
+     "length_in": {
+      "type": "number",
+      "title": "Length In",
+      "default": 0.0
+     },
+     "width_in": {
+      "type": "number",
+      "title": "Width In",
+      "default": 0.0
+     },
+     "height_in": {
+      "type": "number",
+      "title": "Height In",
+      "default": 0.0
+     }
+    },
+    "type": "object",
+    "title": "DimensionsCreate",
+    "description": "Product physical dimensions."
+   },
+   "DimensionsResponse": {
+    "properties": {
+     "weight_lbs": {
+      "type": "number",
+      "title": "Weight Lbs"
+     },
+     "length_in": {
+      "type": "number",
+      "title": "Length In"
+     },
+     "width_in": {
+      "type": "number",
+      "title": "Width In"
+     },
+     "height_in": {
+      "type": "number",
+      "title": "Height In"
+     }
+    },
+    "type": "object",
+    "required": [
+     "weight_lbs",
+     "length_in",
+     "width_in",
+     "height_in"
+    ],
+    "title": "DimensionsResponse",
+    "description": "Product physical dimensions."
+   },
+   "HTTPValidationError": {
+    "properties": {
+     "detail": {
+      "items": {
+       "$ref": "#/components/schemas/ValidationError"
+      },
+      "type": "array",
+      "title": "Detail"
+     }
+    },
+    "type": "object",
+    "title": "HTTPValidationError"
+   },
+   "InventoryAdjustRequest": {
+    "properties": {
+     "quantity_good": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Quantity Good"
+     },
+     "quantity_damaged": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Quantity Damaged"
+     },
+     "bin_location": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Bin Location"
+     }
+    },
+    "type": "object",
+    "title": "InventoryAdjustRequest",
+    "description": "Payload to adjust inventory stock counts.\n\n``quantity_good`` is the intended new good-stock count; reserved is preserved\nand available is recomputed as good minus reserved."
+   },
+   "InventoryOverviewItem": {
+    "properties": {
+     "warehouse_id": {
+      "type": "string",
+      "title": "Warehouse Id"
+     },
+     "skus": {
+      "type": "integer",
+      "title": "Skus"
+     },
+     "units": {
+      "type": "integer",
+      "title": "Units"
+     },
+     "low_stock": {
+      "type": "integer",
+      "title": "Low Stock"
+     },
+     "out_stock": {
+      "type": "integer",
+      "title": "Out Stock"
+     }
+    },
+    "type": "object",
+    "required": [
+     "warehouse_id",
+     "skus",
+     "units",
+     "low_stock",
+     "out_stock"
+    ],
+    "title": "InventoryOverviewItem",
+    "description": "Inventory metric for a warehouse."
+   },
+   "InventoryResponse": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "title": "Id"
+     },
+     "product_id": {
+      "type": "string",
+      "title": "Product Id"
+     },
+     "warehouse_id": {
+      "type": "string",
+      "title": "Warehouse Id"
+     },
+     "seller_id": {
+      "type": "string",
+      "title": "Seller Id"
+     },
+     "quantity_good": {
+      "type": "integer",
+      "title": "Quantity Good"
+     },
+     "quantity_damaged": {
+      "type": "integer",
+      "title": "Quantity Damaged"
+     },
+     "quantity_reserved": {
+      "type": "integer",
+      "title": "Quantity Reserved"
+     },
+     "quantity_available": {
+      "type": "integer",
+      "title": "Quantity Available"
+     },
+     "bin_location": {
+      "type": "string",
+      "title": "Bin Location"
+     },
+     "last_updated": {
+      "type": "string",
+      "title": "Last Updated"
+     },
+     "last_updated_by": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Last Updated By"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "product_id",
+     "warehouse_id",
+     "seller_id",
+     "quantity_good",
+     "quantity_damaged",
+     "quantity_reserved",
+     "quantity_available",
+     "bin_location",
+     "last_updated"
+    ],
+    "title": "InventoryResponse",
+    "description": "Inventory representation."
+   },
+   "InvoiceLineItemResponse": {
+    "properties": {
+     "description": {
+      "type": "string",
+      "title": "Description"
+     },
+     "units": {
+      "type": "number",
+      "title": "Units"
+     },
+     "days": {
+      "type": "number",
+      "title": "Days"
+     },
+     "rate": {
+      "type": "number",
+      "title": "Rate"
+     },
+     "amount": {
+      "type": "number",
+      "title": "Amount"
+     }
+    },
+    "type": "object",
+    "required": [
+     "description",
+     "units",
+     "days",
+     "rate",
+     "amount"
+    ],
+    "title": "InvoiceLineItemResponse",
+    "description": "A charge line."
+   },
+   "InvoicePeriodResponse": {
+    "properties": {
+     "month": {
+      "type": "integer",
+      "title": "Month"
+     },
+     "year": {
+      "type": "integer",
+      "title": "Year"
+     }
+    },
+    "type": "object",
+    "required": [
+     "month",
+     "year"
+    ],
+    "title": "InvoicePeriodResponse",
+    "description": "Billing period."
+   },
+   "InvoiceResponse": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "title": "Id"
+     },
+     "invoice_ref": {
+      "type": "string",
+      "title": "Invoice Ref"
+     },
+     "seller_id": {
+      "type": "string",
+      "title": "Seller Id"
+     },
+     "seller_name": {
+      "type": "string",
+      "title": "Seller Name"
+     },
+     "period": {
+      "$ref": "#/components/schemas/InvoicePeriodResponse"
+     },
+     "line_items": {
+      "items": {
+       "$ref": "#/components/schemas/InvoiceLineItemResponse"
+      },
+      "type": "array",
+      "title": "Line Items"
+     },
+     "subtotal": {
+      "type": "number",
+      "title": "Subtotal"
+     },
+     "tax": {
+      "type": "number",
+      "title": "Tax"
+     },
+     "total": {
+      "type": "number",
+      "title": "Total"
+     },
+     "status": {
+      "$ref": "#/components/schemas/InvoiceStatus"
+     },
+     "sent_at": {
+      "type": "string",
+      "title": "Sent At",
+      "default": ""
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "invoice_ref",
+     "seller_id",
+     "seller_name",
+     "period",
+     "line_items",
+     "subtotal",
+     "tax",
+     "total",
+     "status"
+    ],
+    "title": "InvoiceResponse",
+    "description": "Invoice representation."
+   },
+   "InvoiceStatus": {
+    "type": "string",
+    "enum": [
+     "draft",
+     "sent"
+    ],
+    "title": "InvoiceStatus",
+    "description": "Lifecycle status for an invoice."
+   },
+   "LoginRequest": {
+    "properties": {
+     "email": {
+      "type": "string",
+      "title": "Email",
+      "description": "User email address"
+     },
+     "password": {
+      "type": "string",
+      "minLength": 1,
+      "title": "Password",
+      "description": "User password"
+     }
+    },
+    "type": "object",
+    "required": [
+     "email",
+     "password"
+    ],
+    "title": "LoginRequest",
+    "description": "Credentials for user login."
+   },
+   "LoginResponse": {
+    "properties": {
+     "access_token": {
+      "type": "string",
+      "title": "Access Token"
+     },
+     "token_type": {
+      "type": "string",
+      "title": "Token Type",
+      "default": "bearer"
+     },
+     "user_id": {
+      "type": "string",
+      "title": "User Id"
+     },
+     "email": {
+      "type": "string",
+      "title": "Email"
+     },
+     "role": {
+      "type": "string",
+      "title": "Role"
+     },
+     "warehouse_id": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Warehouse Id"
+     },
+     "full_name": {
+      "type": "string",
+      "title": "Full Name"
+     }
+    },
+    "type": "object",
+    "required": [
+     "access_token",
+     "user_id",
+     "email",
+     "role",
+     "full_name"
+    ],
+    "title": "LoginResponse",
+    "description": "Successful login response with a JWT."
+   },
+   "NotificationChannel": {
+    "type": "string",
+    "enum": [
+     "email",
+     "sms",
+     "in_app",
+     "push"
+    ],
+    "title": "NotificationChannel",
+    "description": "Delivery channel for a notification."
+   },
+   "NotificationResponse": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "title": "Id"
+     },
+     "recipient_type": {
+      "$ref": "#/components/schemas/RecipientType"
+     },
+     "recipient_id": {
+      "type": "string",
+      "title": "Recipient Id"
+     },
+     "recipient_email": {
+      "type": "string",
+      "title": "Recipient Email"
+     },
+     "channel": {
+      "$ref": "#/components/schemas/NotificationChannel"
+     },
+     "notification_type": {
+      "$ref": "#/components/schemas/NotificationType"
+     },
+     "subject": {
+      "type": "string",
+      "title": "Subject"
+     },
+     "message": {
+      "type": "string",
+      "title": "Message"
+     },
+     "is_read": {
+      "type": "boolean",
+      "title": "Is Read"
+     },
+     "is_sent": {
+      "type": "boolean",
+      "title": "Is Sent"
+     },
+     "sent_at": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Sent At"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "recipient_type",
+     "recipient_id",
+     "recipient_email",
+     "channel",
+     "notification_type",
+     "subject",
+     "message",
+     "is_read",
+     "is_sent"
+    ],
+    "title": "NotificationResponse",
+    "description": "Notification representation."
+   },
+   "NotificationType": {
+    "type": "string",
+    "enum": [
+     "low_stock_alert",
+     "shipment_received",
+     "order_shipped",
+     "return_processed",
+     "invoice_ready",
+     "daily_summary",
+     "stale_order",
+     "damage_report",
+     "anomaly"
+    ],
+    "title": "NotificationType",
+    "description": "Category of notification."
+   },
+   "OperatingHoursCreate": {
+    "properties": {
+     "open": {
+      "type": "string",
+      "title": "Open"
+     },
+     "close": {
+      "type": "string",
+      "title": "Close"
+     }
+    },
+    "type": "object",
+    "required": [
+     "open",
+     "close"
+    ],
+    "title": "OperatingHoursCreate",
+    "description": "Warehouse operating hours."
+   },
+   "OperatingHoursResponse": {
+    "properties": {
+     "open": {
+      "type": "string",
+      "title": "Open"
+     },
+     "close": {
+      "type": "string",
+      "title": "Close"
+     }
+    },
+    "type": "object",
+    "required": [
+     "open",
+     "close"
+    ],
+    "title": "OperatingHoursResponse",
+    "description": "Warehouse operating hours."
+   },
+   "OrderCreate": {
+    "properties": {
+     "order_ref": {
+      "type": "string",
+      "title": "Order Ref"
+     },
+     "seller_id": {
+      "type": "string",
+      "title": "Seller Id"
+     },
+     "warehouse_id": {
+      "type": "string",
+      "title": "Warehouse Id"
+     },
+     "customer": {
+      "$ref": "#/components/schemas/CustomerCreate"
+     },
+     "items": {
+      "items": {
+       "$ref": "#/components/schemas/OrderItemCreate"
+      },
+      "type": "array",
+      "title": "Items"
+     },
+     "assigned_to": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Assigned To"
+     }
+    },
+    "type": "object",
+    "required": [
+     "order_ref",
+     "seller_id",
+     "warehouse_id",
+     "customer"
+    ],
+    "title": "OrderCreate",
+    "description": "Payload to create a new order."
+   },
+   "OrderItemCreate": {
+    "properties": {
+     "product_id": {
+      "type": "string",
+      "title": "Product Id"
+     },
+     "quantity": {
+      "type": "integer",
+      "minimum": 1.0,
+      "title": "Quantity"
+     }
+    },
+    "type": "object",
+    "required": [
+     "product_id",
+     "quantity"
+    ],
+    "title": "OrderItemCreate",
+    "description": "A line item on an order."
+   },
+   "OrderItemResponse": {
+    "properties": {
+     "product_id": {
+      "type": "string",
+      "title": "Product Id"
+     },
+     "upc_barcode": {
+      "type": "string",
+      "title": "Upc Barcode"
+     },
+     "product_name": {
+      "type": "string",
+      "title": "Product Name"
+     },
+     "quantity": {
+      "type": "integer",
+      "title": "Quantity"
+     }
+    },
+    "type": "object",
+    "required": [
+     "product_id",
+     "upc_barcode",
+     "product_name",
+     "quantity"
+    ],
+    "title": "OrderItemResponse",
+    "description": "A line item on an order."
+   },
+   "OrderResponse": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "title": "Id"
+     },
+     "order_ref": {
+      "type": "string",
+      "title": "Order Ref"
+     },
+     "seller_id": {
+      "type": "string",
+      "title": "Seller Id"
+     },
+     "warehouse_id": {
+      "type": "string",
+      "title": "Warehouse Id"
+     },
+     "customer": {
+      "$ref": "#/components/schemas/CustomerResponse"
+     },
+     "status": {
+      "$ref": "#/components/schemas/OrderStatus"
+     },
+     "assigned_to": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Assigned To"
+     },
+     "items": {
+      "items": {
+       "$ref": "#/components/schemas/OrderItemResponse"
+      },
+      "type": "array",
+      "title": "Items"
+     },
+     "shipping": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/ShippingResponse"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "order_ref",
+     "seller_id",
+     "warehouse_id",
+     "customer",
+     "status",
+     "items"
+    ],
+    "title": "OrderResponse",
+    "description": "Order representation."
+   },
+   "OrderStatus": {
+    "type": "string",
+    "enum": [
+     "pending",
+     "picking",
+     "packed",
+     "labeled",
+     "shipped",
+     "cancelled"
+    ],
+    "title": "OrderStatus",
+    "description": "Lifecycle status for an outbound order."
+   },
+   "OrderStatusUpdate": {
+    "properties": {
+     "status": {
+      "$ref": "#/components/schemas/OrderStatus"
+     },
+     "shipping": {
+      "anyOf": [
+       {
+        "type": "object"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Shipping"
+     }
+    },
+    "type": "object",
+    "required": [
+     "status"
+    ],
+    "title": "OrderStatusUpdate",
+    "description": "Payload to update order status and optional shipping details."
+   },
+   "PasswordChange": {
+    "properties": {
+     "old_password": {
+      "type": "string",
+      "title": "Old Password"
+     },
+     "new_password": {
+      "type": "string",
+      "minLength": 6,
+      "title": "New Password"
+     }
+    },
+    "type": "object",
+    "required": [
+     "old_password",
+     "new_password"
+    ],
+    "title": "PasswordChange",
+    "description": "Payload to change a user's password."
+   },
+   "ProductCreate": {
+    "properties": {
+     "seller_id": {
+      "type": "string",
+      "title": "Seller Id"
+     },
+     "upc_barcode": {
+      "type": "string",
+      "title": "Upc Barcode"
+     },
+     "sku": {
+      "type": "string",
+      "title": "Sku"
+     },
+     "product_name": {
+      "type": "string",
+      "title": "Product Name"
+     },
+     "description": {
+      "type": "string",
+      "title": "Description",
+      "default": ""
+     },
+     "dimensions": {
+      "$ref": "#/components/schemas/DimensionsCreate"
+     },
+     "low_stock_threshold": {
+      "type": "integer",
+      "title": "Low Stock Threshold",
+      "default": 20
+     },
+     "category": {
+      "type": "string",
+      "title": "Category",
+      "default": ""
+     },
+     "is_active": {
+      "type": "boolean",
+      "title": "Is Active",
+      "default": true
+     }
+    },
+    "type": "object",
+    "required": [
+     "seller_id",
+     "upc_barcode",
+     "sku",
+     "product_name"
+    ],
+    "title": "ProductCreate",
+    "description": "Payload to create a product."
+   },
+   "ProductResponse": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "title": "Id"
+     },
+     "seller_id": {
+      "type": "string",
+      "title": "Seller Id"
+     },
+     "upc_barcode": {
+      "type": "string",
+      "title": "Upc Barcode"
+     },
+     "sku": {
+      "type": "string",
+      "title": "Sku"
+     },
+     "product_name": {
+      "type": "string",
+      "title": "Product Name"
+     },
+     "description": {
+      "type": "string",
+      "title": "Description"
+     },
+     "dimensions": {
+      "$ref": "#/components/schemas/DimensionsResponse"
+     },
+     "low_stock_threshold": {
+      "type": "integer",
+      "title": "Low Stock Threshold"
+     },
+     "category": {
+      "type": "string",
+      "title": "Category"
+     },
+     "is_active": {
+      "type": "boolean",
+      "title": "Is Active"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "seller_id",
+     "upc_barcode",
+     "sku",
+     "product_name",
+     "description",
+     "dimensions",
+     "low_stock_threshold",
+     "category",
+     "is_active"
+    ],
+    "title": "ProductResponse",
+    "description": "Product representation."
+   },
+   "ProductUpdate": {
+    "properties": {
+     "sku": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Sku"
+     },
+     "product_name": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Product Name"
+     },
+     "description": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Description"
+     },
+     "dimensions": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/DimensionsCreate"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "low_stock_threshold": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Low Stock Threshold"
+     },
+     "category": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Category"
+     },
+     "is_active": {
+      "anyOf": [
+       {
+        "type": "boolean"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Is Active"
+     }
+    },
+    "type": "object",
+    "title": "ProductUpdate",
+    "description": "Payload to update a product."
+   },
+   "QuickStat": {
+    "properties": {
+     "label": {
+      "type": "string",
+      "title": "Label"
+     },
+     "value": {
+      "type": "string",
+      "title": "Value"
+     }
+    },
+    "type": "object",
+    "required": [
+     "label",
+     "value"
+    ],
+    "title": "QuickStat",
+    "description": "A named quick statistic."
+   },
+   "RecipientType": {
+    "type": "string",
+    "enum": [
+     "user",
+     "seller"
+    ],
+    "title": "RecipientType",
+    "description": "Type of notification recipient."
+   },
+   "ReturnAction": {
+    "type": "string",
+    "enum": [
+     "restocked_to_good",
+     "placed_in_damaged",
+     "returned_to_seller",
+     "disposed"
+    ],
+    "title": "ReturnAction",
+    "description": "Disposition action taken on a returned item."
+   },
+   "ReturnCondition": {
+    "type": "string",
+    "enum": [
+     "resellable",
+     "damaged",
+     "unsellable"
+    ],
+    "title": "ReturnCondition",
+    "description": "Condition of a returned item."
+   },
+   "ReturnCreate": {
+    "properties": {
+     "original_order_id": {
+      "type": "string",
+      "title": "Original Order Id"
+     },
+     "return_reason": {
+      "type": "string",
+      "title": "Return Reason",
+      "default": ""
+     },
+     "items": {
+      "items": {
+       "$ref": "#/components/schemas/ReturnItemCreate"
+      },
+      "type": "array",
+      "title": "Items"
+     },
+     "processed_by": {
+      "type": "string",
+      "title": "Processed By",
+      "default": ""
+     }
+    },
+    "type": "object",
+    "required": [
+     "original_order_id"
+    ],
+    "title": "ReturnCreate",
+    "description": "Payload to create/process a return."
+   },
+   "ReturnItemCreate": {
+    "properties": {
+     "product_id": {
+      "type": "string",
+      "title": "Product Id"
+     },
+     "quantity": {
+      "type": "integer",
+      "minimum": 1.0,
+      "title": "Quantity"
+     },
+     "condition": {
+      "$ref": "#/components/schemas/ReturnCondition"
+     },
+     "damage_grade": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/DamageGrade"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "action_taken": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/ReturnAction"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     }
+    },
+    "type": "object",
+    "required": [
+     "product_id",
+     "quantity",
+     "condition"
+    ],
+    "title": "ReturnItemCreate",
+    "description": "A returned line item."
+   },
+   "ReturnItemResponse": {
+    "properties": {
+     "product_id": {
+      "type": "string",
+      "title": "Product Id"
+     },
+     "product_name": {
+      "type": "string",
+      "title": "Product Name"
+     },
+     "quantity": {
+      "type": "integer",
+      "title": "Quantity"
+     },
+     "condition": {
+      "$ref": "#/components/schemas/ReturnCondition"
+     },
+     "damage_grade": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/DamageGrade"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "action_taken": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/ReturnAction"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     }
+    },
+    "type": "object",
+    "required": [
+     "product_id",
+     "product_name",
+     "quantity",
+     "condition"
+    ],
+    "title": "ReturnItemResponse",
+    "description": "A returned line item."
+   },
+   "ReturnResponse": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "title": "Id"
+     },
+     "return_ref": {
+      "type": "string",
+      "title": "Return Ref"
+     },
+     "original_order_id": {
+      "type": "string",
+      "title": "Original Order Id"
+     },
+     "original_order_ref": {
+      "type": "string",
+      "title": "Original Order Ref"
+     },
+     "seller_id": {
+      "type": "string",
+      "title": "Seller Id"
+     },
+     "warehouse_id": {
+      "type": "string",
+      "title": "Warehouse Id"
+     },
+     "items": {
+      "items": {
+       "$ref": "#/components/schemas/ReturnItemResponse"
+      },
+      "type": "array",
+      "title": "Items"
+     },
+     "return_reason": {
+      "type": "string",
+      "title": "Return Reason"
+     },
+     "status": {
+      "$ref": "#/components/schemas/ReturnStatus"
+     },
+     "processed_by": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Processed By"
+     },
+     "seller_notified": {
+      "type": "boolean",
+      "title": "Seller Notified"
+     },
+     "completed_at": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Completed At"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "return_ref",
+     "original_order_id",
+     "original_order_ref",
+     "seller_id",
+     "warehouse_id",
+     "items",
+     "return_reason",
+     "status",
+     "seller_notified"
+    ],
+    "title": "ReturnResponse",
+    "description": "Return representation."
+   },
+   "ReturnStatus": {
+    "type": "string",
+    "enum": [
+     "pending",
+     "completed",
+     "awaiting_seller",
+     "disposed"
+    ],
+    "title": "ReturnStatus",
+    "description": "Lifecycle status for a return record."
+   },
+   "SellerCreate": {
+    "properties": {
+     "company_name": {
+      "type": "string",
+      "title": "Company Name"
+     },
+     "contact_name": {
+      "type": "string",
+      "title": "Contact Name"
+     },
+     "email": {
+      "type": "string",
+      "title": "Email"
+     },
+     "phone": {
+      "type": "string",
+      "title": "Phone"
+     },
+     "billing_rates": {
+      "$ref": "#/components/schemas/BillingRatesCreate"
+     },
+     "portal_password": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Portal Password"
+     },
+     "low_stock_threshold_default": {
+      "type": "integer",
+      "title": "Low Stock Threshold Default",
+      "default": 20
+     },
+     "is_active": {
+      "type": "boolean",
+      "title": "Is Active",
+      "default": true
+     }
+    },
+    "type": "object",
+    "required": [
+     "company_name",
+     "contact_name",
+     "email",
+     "phone"
+    ],
+    "title": "SellerCreate",
+    "description": "Payload to create a seller."
+   },
+   "SellerResponse": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "title": "Id"
+     },
+     "company_name": {
+      "type": "string",
+      "title": "Company Name"
+     },
+     "contact_name": {
+      "type": "string",
+      "title": "Contact Name"
+     },
+     "email": {
+      "type": "string",
+      "title": "Email"
+     },
+     "phone": {
+      "type": "string",
+      "title": "Phone"
+     },
+     "billing_rates": {
+      "$ref": "#/components/schemas/BillingRatesResponse"
+     },
+     "low_stock_threshold_default": {
+      "type": "integer",
+      "title": "Low Stock Threshold Default"
+     },
+     "is_active": {
+      "type": "boolean",
+      "title": "Is Active"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "company_name",
+     "contact_name",
+     "email",
+     "phone",
+     "billing_rates",
+     "low_stock_threshold_default",
+     "is_active"
+    ],
+    "title": "SellerResponse",
+    "description": "Seller representation (no portal password hash)."
+   },
+   "SellerUpdate": {
+    "properties": {
+     "contact_name": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Contact Name"
+     },
+     "email": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Email"
+     },
+     "phone": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Phone"
+     },
+     "billing_rates": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/BillingRatesCreate"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "low_stock_threshold_default": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Low Stock Threshold Default"
+     },
+     "is_active": {
+      "anyOf": [
+       {
+        "type": "boolean"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Is Active"
+     }
+    },
+    "type": "object",
+    "title": "SellerUpdate",
+    "description": "Payload to update a seller."
+   },
+   "ShipmentConfirm": {
+    "properties": {
+     "shipment_ref": {
+      "type": "string",
+      "title": "Shipment Ref"
+     },
+     "received_by": {
+      "type": "string",
+      "title": "Received By"
+     },
+     "items": {
+      "items": {
+       "$ref": "#/components/schemas/ShipmentItemUpdate"
+      },
+      "type": "array",
+      "title": "Items"
+     },
+     "notes": {
+      "type": "string",
+      "title": "Notes",
+      "default": ""
+     }
+    },
+    "type": "object",
+    "required": [
+     "shipment_ref",
+     "received_by"
+    ],
+    "title": "ShipmentConfirm",
+    "description": "Payload to confirm receipt of a shipment."
+   },
+   "ShipmentDraftCreate": {
+    "properties": {
+     "shipment_ref": {
+      "type": "string",
+      "title": "Shipment Ref"
+     },
+     "seller_id": {
+      "type": "string",
+      "title": "Seller Id"
+     },
+     "warehouse_id": {
+      "type": "string",
+      "title": "Warehouse Id"
+     },
+     "carrier": {
+      "type": "string",
+      "title": "Carrier",
+      "default": ""
+     },
+     "notes": {
+      "type": "string",
+      "title": "Notes",
+      "default": ""
+     },
+     "items": {
+      "items": {
+       "$ref": "#/components/schemas/ShipmentItemCreate"
+      },
+      "type": "array",
+      "title": "Items"
+     }
+    },
+    "type": "object",
+    "required": [
+     "shipment_ref",
+     "seller_id",
+     "warehouse_id"
+    ],
+    "title": "ShipmentDraftCreate",
+    "description": "Payload to create a draft shipment (verify + scan items)."
+   },
+   "ShipmentItemCreate": {
+    "properties": {
+     "product_id": {
+      "type": "string",
+      "title": "Product Id"
+     },
+     "quantity_expected": {
+      "type": "integer",
+      "minimum": 0.0,
+      "title": "Quantity Expected"
+     },
+     "quantity_received": {
+      "type": "integer",
+      "title": "Quantity Received",
+      "default": 0
+     },
+     "quantity_damaged": {
+      "type": "integer",
+      "title": "Quantity Damaged",
+      "default": 0
+     },
+     "damage_grade": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/DamageGrade"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "damage_notes": {
+      "type": "string",
+      "title": "Damage Notes",
+      "default": ""
+     }
+    },
+    "type": "object",
+    "required": [
+     "product_id",
+     "quantity_expected"
+    ],
+    "title": "ShipmentItemCreate",
+    "description": "A line item on a shipment."
+   },
+   "ShipmentItemResponse": {
+    "properties": {
+     "product_id": {
+      "type": "string",
+      "title": "Product Id"
+     },
+     "upc_barcode": {
+      "type": "string",
+      "title": "Upc Barcode"
+     },
+     "product_name": {
+      "type": "string",
+      "title": "Product Name"
+     },
+     "quantity_expected": {
+      "type": "integer",
+      "title": "Quantity Expected"
+     },
+     "quantity_received": {
+      "type": "integer",
+      "title": "Quantity Received"
+     },
+     "quantity_damaged": {
+      "type": "integer",
+      "title": "Quantity Damaged"
+     },
+     "damage_grade": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/DamageGrade"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "damage_notes": {
+      "type": "string",
+      "title": "Damage Notes",
+      "default": ""
+     }
+    },
+    "type": "object",
+    "required": [
+     "product_id",
+     "upc_barcode",
+     "product_name",
+     "quantity_expected",
+     "quantity_received",
+     "quantity_damaged"
+    ],
+    "title": "ShipmentItemResponse",
+    "description": "A line item on a shipment."
+   },
+   "ShipmentItemUpdate": {
+    "properties": {
+     "product_id": {
+      "type": "string",
+      "title": "Product Id"
+     },
+     "quantity_received": {
+      "type": "integer",
+      "minimum": 0.0,
+      "title": "Quantity Received"
+     },
+     "quantity_damaged": {
+      "type": "integer",
+      "minimum": 0.0,
+      "title": "Quantity Damaged"
+     },
+     "damage_grade": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/DamageGrade"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "damage_notes": {
+      "type": "string",
+      "title": "Damage Notes",
+      "default": ""
+     }
+    },
+    "type": "object",
+    "required": [
+     "product_id",
+     "quantity_received",
+     "quantity_damaged"
+    ],
+    "title": "ShipmentItemUpdate",
+    "description": "Update to a single line item during receiving."
+   },
+   "ShipmentResponse": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "title": "Id"
+     },
+     "shipment_ref": {
+      "type": "string",
+      "title": "Shipment Ref"
+     },
+     "seller_id": {
+      "type": "string",
+      "title": "Seller Id"
+     },
+     "warehouse_id": {
+      "type": "string",
+      "title": "Warehouse Id"
+     },
+     "carrier": {
+      "type": "string",
+      "title": "Carrier"
+     },
+     "status": {
+      "$ref": "#/components/schemas/ShipmentStatus"
+     },
+     "received_by": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Received By"
+     },
+     "received_at": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Received At"
+     },
+     "notes": {
+      "type": "string",
+      "title": "Notes"
+     },
+     "items": {
+      "items": {
+       "$ref": "#/components/schemas/ShipmentItemResponse"
+      },
+      "type": "array",
+      "title": "Items"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "shipment_ref",
+     "seller_id",
+     "warehouse_id",
+     "carrier",
+     "status",
+     "notes",
+     "items"
+    ],
+    "title": "ShipmentResponse",
+    "description": "Shipment representation."
+   },
+   "ShipmentStatus": {
+    "type": "string",
+    "enum": [
+     "draft",
+     "received"
+    ],
+    "title": "ShipmentStatus",
+    "description": "Lifecycle status for an inbound shipment."
+   },
+   "ShippingResponse": {
+    "properties": {
+     "carrier": {
+      "type": "string",
+      "title": "Carrier"
+     },
+     "tracking_number": {
+      "type": "string",
+      "title": "Tracking Number"
+     },
+     "weight_lbs": {
+      "type": "number",
+      "title": "Weight Lbs"
+     },
+     "ship_cost": {
+      "type": "number",
+      "title": "Ship Cost"
+     },
+     "shipped_at": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Shipped At"
+     }
+    },
+    "type": "object",
+    "required": [
+     "carrier",
+     "tracking_number",
+     "weight_lbs",
+     "ship_cost"
+    ],
+    "title": "ShippingResponse",
+    "description": "Shipping details."
+   },
+   "StockLevelResponse": {
+    "properties": {
+     "product_id": {
+      "type": "string",
+      "title": "Product Id"
+     },
+     "product_name": {
+      "type": "string",
+      "title": "Product Name"
+     },
+     "upc_barcode": {
+      "type": "string",
+      "title": "Upc Barcode"
+     },
+     "warehouse_id": {
+      "type": "string",
+      "title": "Warehouse Id"
+     },
+     "quantity_good": {
+      "type": "integer",
+      "title": "Quantity Good"
+     },
+     "quantity_damaged": {
+      "type": "integer",
+      "title": "Quantity Damaged"
+     },
+     "quantity_reserved": {
+      "type": "integer",
+      "title": "Quantity Reserved"
+     },
+     "quantity_available": {
+      "type": "integer",
+      "title": "Quantity Available"
+     },
+     "bin_location": {
+      "type": "string",
+      "title": "Bin Location"
+     }
+    },
+    "type": "object",
+    "required": [
+     "product_id",
+     "product_name",
+     "upc_barcode",
+     "warehouse_id",
+     "quantity_good",
+     "quantity_damaged",
+     "quantity_reserved",
+     "quantity_available",
+     "bin_location"
+    ],
+    "title": "StockLevelResponse",
+    "description": "Live stock level for a product."
+   },
+   "UserCreate": {
+    "properties": {
+     "full_name": {
+      "type": "string",
+      "title": "Full Name"
+     },
+     "email": {
+      "type": "string",
+      "title": "Email"
+     },
+     "password": {
+      "type": "string",
+      "minLength": 6,
+      "title": "Password"
+     },
+     "role": {
+      "$ref": "#/components/schemas/UserRole"
+     },
+     "warehouse_id": {
+      "type": "string",
+      "title": "Warehouse Id"
+     },
+     "is_active": {
+      "type": "boolean",
+      "title": "Is Active",
+      "default": true
+     }
+    },
+    "type": "object",
+    "required": [
+     "full_name",
+     "email",
+     "password",
+     "role",
+     "warehouse_id"
+    ],
+    "title": "UserCreate",
+    "description": "Payload to create a warehouse staff user."
+   },
+   "UserResponse": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "title": "Id"
+     },
+     "full_name": {
+      "type": "string",
+      "title": "Full Name"
+     },
+     "email": {
+      "type": "string",
+      "title": "Email"
+     },
+     "role": {
+      "$ref": "#/components/schemas/UserRole"
+     },
+     "warehouse_id": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Warehouse Id"
+     },
+     "is_active": {
+      "type": "boolean",
+      "title": "Is Active"
+     },
+     "last_login": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Last Login"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "full_name",
+     "email",
+     "role",
+     "is_active"
+    ],
+    "title": "UserResponse",
+    "description": "User representation without the password hash."
+   },
+   "UserRole": {
+    "type": "string",
+    "enum": [
+     "admin",
+     "manager",
+     "receiver",
+     "picker",
+     "readonly"
+    ],
+    "title": "UserRole",
+    "description": "Roles allowed for warehouse staff users."
+   },
+   "UserUpdate": {
+    "properties": {
+     "full_name": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Full Name"
+     },
+     "role": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/UserRole"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "warehouse_id": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Warehouse Id"
+     },
+     "is_active": {
+      "anyOf": [
+       {
+        "type": "boolean"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Is Active"
+     }
+    },
+    "type": "object",
+    "title": "UserUpdate",
+    "description": "Payload to update a user's non-credential fields."
+   },
+   "ValidationError": {
+    "properties": {
+     "loc": {
+      "items": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "integer"
+        }
+       ]
+      },
+      "type": "array",
+      "title": "Location"
+     },
+     "msg": {
+      "type": "string",
+      "title": "Message"
+     },
+     "type": {
+      "type": "string",
+      "title": "Error Type"
+     }
+    },
+    "type": "object",
+    "required": [
+     "loc",
+     "msg",
+     "type"
+    ],
+    "title": "ValidationError"
+   },
+   "WarehouseCreate": {
+    "properties": {
+     "name": {
+      "type": "string",
+      "title": "Name"
+     },
+     "city": {
+      "type": "string",
+      "title": "City"
+     },
+     "state": {
+      "type": "string",
+      "title": "State"
+     },
+     "address": {
+      "type": "string",
+      "title": "Address"
+     },
+     "is_active": {
+      "type": "boolean",
+      "title": "Is Active",
+      "default": true
+     },
+     "carrier_schedules": {
+      "items": {
+       "$ref": "#/components/schemas/CarrierScheduleCreate"
+      },
+      "type": "array",
+      "title": "Carrier Schedules"
+     },
+     "operating_hours": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/OperatingHoursCreate"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     }
+    },
+    "type": "object",
+    "required": [
+     "name",
+     "city",
+     "state",
+     "address"
+    ],
+    "title": "WarehouseCreate",
+    "description": "Payload to create a warehouse."
+   },
+   "WarehouseOverview": {
+    "properties": {
+     "warehouse_id": {
+      "type": "string",
+      "title": "Warehouse Id"
+     },
+     "warehouse_name": {
+      "type": "string",
+      "title": "Warehouse Name"
+     },
+     "staff_active": {
+      "type": "integer",
+      "title": "Staff Active"
+     },
+     "pending_orders": {
+      "type": "integer",
+      "title": "Pending Orders"
+     },
+     "shipments_today": {
+      "type": "integer",
+      "title": "Shipments Today"
+     },
+     "alerts": {
+      "type": "integer",
+      "title": "Alerts"
+     }
+    },
+    "type": "object",
+    "required": [
+     "warehouse_id",
+     "warehouse_name",
+     "staff_active",
+     "pending_orders",
+     "shipments_today",
+     "alerts"
+    ],
+    "title": "WarehouseOverview",
+    "description": "Per-warehouse summary card."
+   },
+   "WarehouseResponse": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "title": "Id"
+     },
+     "name": {
+      "type": "string",
+      "title": "Name"
+     },
+     "city": {
+      "type": "string",
+      "title": "City"
+     },
+     "state": {
+      "type": "string",
+      "title": "State"
+     },
+     "address": {
+      "type": "string",
+      "title": "Address"
+     },
+     "is_active": {
+      "type": "boolean",
+      "title": "Is Active"
+     },
+     "carrier_schedules": {
+      "items": {
+       "$ref": "#/components/schemas/CarrierScheduleResponse"
+      },
+      "type": "array",
+      "title": "Carrier Schedules"
+     },
+     "operating_hours": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/OperatingHoursResponse"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "name",
+     "city",
+     "state",
+     "address",
+     "is_active"
+    ],
+    "title": "WarehouseResponse",
+    "description": "Warehouse representation."
+   },
+   "WarehouseUpdate": {
+    "properties": {
+     "name": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Name"
+     },
+     "city": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "City"
+     },
+     "state": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "State"
+     },
+     "address": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Address"
+     },
+     "is_active": {
+      "anyOf": [
+       {
+        "type": "boolean"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Is Active"
+     },
+     "carrier_schedules": {
+      "anyOf": [
+       {
+        "items": {
+         "$ref": "#/components/schemas/CarrierScheduleCreate"
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Carrier Schedules"
+     },
+     "operating_hours": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/OperatingHoursCreate"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     }
+    },
+    "type": "object",
+    "title": "WarehouseUpdate",
+    "description": "Payload to update a warehouse."
+   }
+  },
+  "securitySchemes": {
+   "OAuth2PasswordBearer": {
+    "type": "oauth2",
+    "flows": {
+     "password": {
+      "scopes": {},
+      "tokenUrl": "/v1/auth/login"
+     }
+    }
+   }
+  }
+ }
+}

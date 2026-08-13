@@ -1,0 +1,40 @@
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# Python
+__pycache__/
+*.py[cod]
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.coverage
+htmlcov/
+*.egg-info/
+
+# Builds and distributions
+dist/
+build/
+out/
+target/
+
+# Logs
+logs/
+*.log
+
+# Local databases and generated artifacts
+*.sqlite*
+*.db
+reports/*.csv
+
+# Editors / OS
+.DS_Store
+.idea/
+.vscode/
+*.swp
