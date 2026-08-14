@@ -12,7 +12,7 @@ through your WMS backend.
 │  (browser)       │ ──── POST /api/offer ────► │  (:7860)         │
 └──────────────────┘         SDP handshake      └──────────────────┘
                                                     │      │      │
-                                            Deepgram  │      │  Google Gemini
+                                            Deepgram  │      │  Groq
                                             STT/TTS         (WMS tools → your backend)
 ```
 
@@ -30,7 +30,7 @@ voice_ai/
 ├── server/
 │   ├── bot.py              Pipecat pipeline (start here)
 │   ├── wms_tools.py        WMS read tools + action tools (call the backend)
-│   └── .env.example        DEEPGRAM_API_KEY, GOOGLE_API_KEY, WMS_*
+│   └── .env.example        DEEPGRAM_API_KEY, GROQ_API_KEY, WMS_*
 └── client/                 React + Vite voice UI
 ```
 

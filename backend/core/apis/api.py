@@ -42,6 +42,7 @@ from core.apis.routes.order_router import order_router
 from core.apis.routes.product_router import product_router
 from core.apis.routes.return_router import return_router
 from core.apis.routes.seller_router import seller_router
+from core.apis.routes.seller_portal_router import seller_portal_router
 from core.apis.routes.shipment_router import shipment_router
 from core.apis.routes.user_router import user_router
 from core.apis.routes.warehouse_router import warehouse_router
@@ -189,6 +190,7 @@ ROUTERS = [
     warehouse_router,
     chatbot_router,
     seller_router,
+    seller_portal_router,
     product_router,
     inventory_router,
     shipment_router,

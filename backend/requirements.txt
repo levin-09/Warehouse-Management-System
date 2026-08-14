@@ -1,7 +1,7 @@
 # ---- WMS backend ----
 fastapi==0.115.6
 uvicorn[standard]==0.34.0
-pydantic==2.10.4
+pydantic==2.10.6
 pydantic-settings==2.7.0
 motor==3.6.0
 python-jose[cryptography]==3.3.0
@@ -14,7 +14,8 @@ APScheduler==3.11.0
 groq>=0.11.0
 
 # ---- AI: voice assistant (Pipecat) — used by voice_ai/server ----
-pipecat-ai[deepgram,groq,smallwebrtc]
+# Pipecat version is pinned so the voice bot's API imports stay consistent.
+pipecat-ai[deepgram,groq,silero,webrtc,runner]==1.7.0
 python-dotenv
 httpx
 loguru

@@ -26,7 +26,7 @@ from dotenv import load_dotenv
 from loguru import logger
 
 from pipecat.audio.vad.silero import SileroVADAnalyzer
-from pipecat.frames.frames import LLMRunFrame
+from pipecat.frames.frames import LLMRunFrame, LLMSetToolsFrame
 from pipecat.pipeline.pipeline import Pipeline
 from pipecat.pipeline.worker import PipelineParams, PipelineWorker
 from pipecat.processors.aggregators.llm_context import LLMContext
@@ -37,7 +37,8 @@ from pipecat.processors.aggregators.llm_response_universal import (
 from pipecat.runner.types import RunnerArguments
 from pipecat.services.deepgram.tts import DeepgramTTSService
 from pipecat.services.deepgram.stt import DeepgramSTTService
-from pipecat.services.groq import GroqLLMService
+from pipecat.services.groq.llm import GroqLLMService
+from pipecat.services.llm_service import FunctionCallParams
 from pipecat.transports.base_transport import BaseTransport, TransportParams
 from pipecat.transports.smallwebrtc.connection import SmallWebRTCConnection
 from pipecat.transports.smallwebrtc.transport import SmallWebRTCTransport
@@ -101,13 +102,16 @@ async def run_bot(transport: BaseTransport, runner_args: RunnerArguments):
         settings=GroqLLMService.Settings(
             model=os.environ.get("GROQ_MODEL", "llama-3.3-70b-versatile"),
             system_instruction=WMS_SYSTEM_INSTRUCTION,
-            tools=wms_tools.groq_tools(),
-            tool_choice="auto",
         ),
     )
 
-    # Handle Groq/OpenAI-compatible function calls: run the WMS tool and return the result.
-    llm.register_function_call_handler(handle_wms_function_call)
+    # Register each WMS tool so the model can call it. The handler runs the tool
+    # and returns the JSON result to the LLM.
+    for tool in wms_tools.TOOLS:
+        name = tool["name"]
+        llm.register_function(name, handle_wms_function_call)
+    # Advertise the tools to the model.
+    await llm.queue_frame(LLMSetToolsFrame(tools=wms_tools.groq_tools()))
 
     context = LLMContext()
 
@@ -151,20 +155,20 @@ async def run_bot(transport: BaseTransport, runner_args: RunnerArguments):
     await runner.run()
 
 
-async def handle_wms_function_call(function_name: str, arguments: dict, llm_context, result_callback):
+async def handle_wms_function_call(params: FunctionCallParams):
     """Run a WMS tool and return its result to the LLM.
 
+    Pipecat 1.7.0 passes a single ``FunctionCallParams`` object to registered
+    function handlers.
+
     Args:
-        function_name: The tool name the model requested.
-        arguments: The tool arguments.
-        llm_context: The shared LLM context (unused here).
-        result_callback: Callback to deliver the JSON result.
+        params: The function call parameters (name, arguments, result_callback).
     """
-    logger.info(f"Voice tool call: {function_name} {arguments}")
-    result = await wms_tools.run_tool(function_name, arguments or {})
+    logger.info(f"Voice tool call: {params.function_name} {params.arguments}")
+    result = await wms_tools.run_tool(params.function_name, dict(params.arguments or {}))
     import json
 
-    await result_callback(json.dumps(result, default=str))
+    await params.result_callback(json.dumps(result, default=str))
 
 
 async def bot(runner_args: RunnerArguments):
