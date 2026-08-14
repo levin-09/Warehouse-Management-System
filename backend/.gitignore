@@ -38,6 +38,16 @@ reports/*.csv
 .idea/
 .vscode/
 *.swp
+
+venv/
+.venv/
+__pycache__/
+*.pyc
+.env
+node_modules/
+dist/
+build/
+
 venv/
 .venv/
 __pycache__/
