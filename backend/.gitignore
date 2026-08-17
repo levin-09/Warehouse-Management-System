@@ -39,20 +39,6 @@ reports/*.csv
 .vscode/
 *.swp
 
-venv/
-.venv/
-__pycache__/
-*.pyc
-.env
+# Node.js
 node_modules/
-dist/
-build/
-
-venv/
-.venv/
-__pycache__/
-*.pyc
-.env
-node_modules/
-dist/
-build/
+frontend/node_modules/

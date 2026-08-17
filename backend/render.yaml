@@ -1,0 +1,29 @@
+# Render Blueprint — deploy the Whitfield WMS backend on Render's free tier.
+# To use: push this repo to GitHub, then in Render create a "Blueprint" from
+# this file (render.yaml). It creates the Web Service automatically.
+#
+# NOTE (free tier): Render free web services sleep after ~15 min of inactivity
+# and cold-start (~1 min) on the next request. This is fine for the API/chatbot
+# but the voice assistant needs an always-on instance (not free tier).
+services:
+  - type: web
+    name: whitfield-wms-backend
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn core.apis.api:app --host 0.0.0.0 --port 10000
+    envVars:
+      - key: MONGODB_URI
+        sync: false        # set this in Render dashboard (your Atlas connection string)
+      - key: MONGODB_DB_NAME
+        value: whitfield_wms
+      - key: SECRET_KEY
+        sync: false        # set a long random string in the dashboard
+      - key: GROQ_API_KEY
+        sync: false        # set your Groq key in the dashboard
+      - key: GROQ_MODEL
+        value: qwen/qwen3.6-27b
+      - key: ENABLE_SCHEDULER
+        value: "true"
+      - key: APP_ENV
+        value: production

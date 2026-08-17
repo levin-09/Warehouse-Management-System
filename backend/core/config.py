@@ -28,7 +28,7 @@ class Settings(BaseSettings):
     # ---- AI (chatbot / voice) ----
     # Groq is the LLM provider (OpenAI-compatible). Get a key at https://console.groq.com
     groq_api_key: str = ""
-    groq_model: str = "llama-3.3-70b-versatile"
+    groq_model: str = "qwen/qwen3.6-27b"
 
     smtp_host: str = "smtp.example.com"
     smtp_port: int = 587

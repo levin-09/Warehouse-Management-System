@@ -100,7 +100,7 @@ async def run_bot(transport: BaseTransport, runner_args: RunnerArguments):
     llm = GroqLLMService(
         api_key=os.environ["GROQ_API_KEY"],
         settings=GroqLLMService.Settings(
-            model=os.environ.get("GROQ_MODEL", "llama-3.3-70b-versatile"),
+            model=os.environ.get("GROQ_MODEL", "qwen/qwen3.6-27b"),
             system_instruction=WMS_SYSTEM_INSTRUCTION,
         ),
     )
